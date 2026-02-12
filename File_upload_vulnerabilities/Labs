@@ -1,0 +1,12 @@
+method 3:
+Web shell upload via path traversal:
+-sometimes when we upload a php file, the application allows  the file but it prints the content of that file as plain text as a line of defence.
+-here the avatar directory is much sanitized, so we'll try to execute our file one or two directory before that..
+-upload shell
+-send that req to burp repeater 
+-you'll see that our shell content got printed instead of executing
+-try ../ and send 
+-filename="..%2fexploit.php"
+-file not found
+-url encode the ../ and add it to shell.php
+
