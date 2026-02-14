@@ -1,0 +1,125 @@
+Lab 2:
+Stored XSS into HTML context with nothing encoded:
+
+-this time user input will be stored inside the html tag
+-if we send a html code.. then its getting stored in that dom 
+for instance, try this simple html code :
+
+<h1> Hello world  </h1>
+
+Lab 3:
+DOM XSS in document.write sink using source location.search:
+
+-the document.write function is called by the location.search 
+-you can control it using website url
+-put something in search
+-inspect the page, view source if it isn't displayed dom manipulations
+-ctrl+shift+i
+-here in the source code, we can see z3nsh3ll appearing 2 times 
+-one is in the http req in that html tag, the other is in image tag.
+-so here we'll try to break that image source(src) arrtribute by injecting this code:
+-znsh3ll" onload="alert()
+from
+<img src="/resources/images/tracker.gif?searchTerms=z3nshell">
+To
+<img src="/resources/images/tracker.gif?searchTerms=znsh3ll" onload="alert()">
+
+
+
+Lab 4:
+DOM XSS in .innerHTML sink using source location.search:
+
+-inspect the page  
+-the dom is taking our search term and then injecting it into the span element
+-if we pass jv code, it'll be injected but it wont get executed 
+-this is where it comes down to knowing different sinks 
+-for this lab .innerhtml
+-for this sink, if we pass script tag, it wont get executed
+-so lets try using an image tag that we know will error out and then we'll use 'onerror' attribute = java code.
+code: <img src='0' onerror='alert()'>
+boom! lab solved
+sink is simply the delivery method
+
+
+
+Lab 5: 
+DOM XSS in jQuery sink to anchor 'href' attribute  using location.search source:
+-identify vulnerable backlink
+-go to feedback
+-inspect 
+what is jQuery sink doing here?
+-its looking in the url (/feedback?returnPath=/(homedir))  
+-its looking for the param with the key returnPath, its taking the value /
+-then its manipulating the dom, so that the anchor tag has the href value set to that value that returnPath is passing
+-we're gonna inject that href attribute
+-so we'll try to work with retunPath in the url
+-returnPath=javascript:alert(document.cookie)
+
+
+
+Lab 6:
+ DOM XSS in jQuery selector sink using a hashchange event:
+
+#Notes: jQueries are prefixed by the $ sign.
+
+-It uses jQuery's $() selector function to auto-scroll to a given post, whose title is passed via the location.hash property.
+- in the hash in the url execute this code
+<img src='0' onerror='alert()'>
+to infect the user that are using the same application use this code:
+
+<iframe src="https://0aee006604c9f59e8371c38800ff0003.web-security-academy.net/#"onload="this.src+='<img src=0 onerror=print()>'"></iframe>
+
+deliver exploit to victim
+
+👉 The website listens to the URL
+👉 The website repeats what it hears
+👉 It doesn’t check if it’s dangerous
+👉 Boom 💥 JavaScript runs
+-delivering the payload
+- 
+
+
+
+Lab 7: 
+Reflected XSS into attribute with angle brackets HTML-encoded:
+-inspect the page source 
+-our arbitrary string is appearing inside the value attribute inside the input element
+-we'll break out that value attribute and create new attribute like onmouseover
+-z3nsh3ll" onmouseover='alert()'
+
+
+Lab 8:
+Stored XSS into anchor href attribute with double quotes HTML-encoded:
+-Here in the comment section, we can see that the devs want us to input an website along with name and email, and when we post that comment, we can see out name has been hyperlinked. 
+-if we inspect the page, we can see that the website we provided is in a href attribute...we'll try to break that!
+-javascript:alert()
+solved
+
+
+Lab 9:
+Reflected XSS into a JavaScript string with angle brackets HTML encoded:
+
+-inspect 
+-our context at the moment is we are inside the js string and we're gonna break out of that 
+-if we write z3nsh3ll';alert(); and then inspect the page we'll see that we broke out of that string and theres a lone string  '   at the the end
+-so we write
+-z3nsh3ll';alert();let myvar(js variable) = 'test 
+-we created a new variable to validate the lone string
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
